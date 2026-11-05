@@ -577,7 +577,7 @@ def plot_clustermap(
     }).reindex(matrix.columns)
     annotation_labels = [metadata["genomovar_complete"], phylogroups]
     if predicted is not None:
-        color_bars["ANI-predicted phylogroup"] = predicted.map(palette)
+        color_bars["Predicted phylogroup"] = predicted.map(palette)
         annotation_labels.append(predicted)
 
     # Allow approximately 20 pixels per genome at 300 DPI.

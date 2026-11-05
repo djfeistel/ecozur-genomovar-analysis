@@ -33,7 +33,6 @@ phylogroup-assessment/
   scripts/
     plot_clermontyping_ani.py
     run_ani_phylgroup_prediction.sh
-    test_plot_clermontyping_ani.py
     requirements.txt
     readme.md
   results/
