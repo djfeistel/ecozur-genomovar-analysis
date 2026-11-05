@@ -2,13 +2,11 @@
 
 ## Purpose and scope
 
-This analysis evaluates phylogroup membership for every metadata-listed genome,
-including both unassigned genomes and genomes with an existing ClermonTyping
-call. It combines precomputed fastANI comparisons, genomovar membership,
-ClermonTyping PCR calls, Mash reference comparisons, and patristic distances
-from a core-gene phylogeny.
+This analysis evaluates ClermonTyping phylogroup membership for the [247 *E. coli* genomes that passed QA](../../genome-quality-assessment/results/contamination_vs_completeness.png), including both genomes with and without an assigned ClermonTyping phylogroup assignments.
+It combines precomputed fastANI comparisons, genomovar membership grouped using 99.5% ANI,
+ClermonTyping PCR calls, Mash reference comparisons, and patristic distances from our core-gene phylogeny.
 
-The consensus predictions are **quality-qualified, evidence-based hypotheses**, not confirmed
+The phylgorup consensus predictions are **hypotheses**, not confirmed
 taxonomic corrections or calibrated probabilities. Original assignments are
 preserved alongside predictions. Any two qualified methods agreeing determine
 consensus. Without consensus, a singleton retains its assigned original call
@@ -47,33 +45,10 @@ The Python script resolves its input and default output locations relative to
 its own location. The whole package can be moved without editing absolute
 paths. Keep the `input`, `scripts`, and `results` layout together.
 
-## Installation and execution
-
-The tested environment uses **Python 3.12.12**. The principal package versions
-are pinned in [requirements.txt](requirements.txt). For a new environment,
-run the following from this `scripts` directory:
+## Execution
 
 ```bash
-python3.12 -m venv ../.venv
-source ../.venv/bin/activate
-python -m pip install -r requirements.txt
 bash run_ani_phylgroup_prediction.sh
-```
-
-If a suitable environment is already active, only the last command is needed.
-The launcher fixes the ANI tie-breaking seed to **13** and accepts no arguments.
-It can also be called from any other working directory:
-
-```bash
-bash /path/to/phylogroup-assessment/scripts/run_ani_phylgroup_prediction.sh
-```
-
-By default, the launcher uses `python3` from the active `PATH`. To choose an
-interpreter explicitly:
-
-```bash
-PYTHON=/path/to/environment/bin/python \
-  bash /path/to/phylogroup-assessment/scripts/run_ani_phylgroup_prediction.sh
 ```
 
 Outputs are written to [../results/](../results/). Rerunning the launcher
@@ -82,27 +57,10 @@ Failures return a nonzero exit status; messages are written to standard error.
 
 Equivalent direct invocation, from this directory:
 
-```bash
-python3 -B plot_clermontyping_ani.py --seed 13
-```
-
-The Python CLI also supports `--output` and `--predictions-output` for alternative
-output paths. Omitting `--seed` in a direct invocation generates a random seed,
-which is recorded in the log and output TSV. Use the launcher for seed-13 runs.
-
-The earlier exploratory run used seed 42. Seed 13 is the packaged convention:
-it can select different tied directional ANI rows, so it need not reproduce
-every pixel or every evidence value from a seed-42 run. Identical inputs,
-input ordering, seed, and software versions are needed for reproducibility.
-Fonts/platforms can also affect PNG rendering; this dependency list is not a
-complete lock of every transitive package or system library.
-
 ## Input data and provenance
 
 The inputs were copied from the original EcoZUR analysis; the source files were
-left unchanged. With the exception of the reduced metadata table, input copies
-are byte-for-byte copies. [SHA256SUMS](../input/SHA256SUMS) records hashes for all
-499 packaged input files, excluding the manifest itself.
+left unchanged.
 
 From this directory, verify the input copies with:
 
@@ -113,16 +71,10 @@ From this directory, verify the input copies with:
 ### Genome membership and colors
 
 [EcoZUR_genomovar_metadadta.tsv](../input/EcoZUR_genomovar_metadadta.tsv)
-was projected from the original `08.metadata` table to exactly these columns:
 
 1. `genome`
 2. `genomovar_complete`
 3. `genomovar_complete_colors`
-
-The color header is intentionally **plural**, matching the original table and
-the Python script. All 247 rows, their order, and these three values were
-preserved; other metadata attributes were excluded.
-The packaged filename intentionally uses the requested spelling `metadadta`.
 
 This table defines the complete analysis population. Genomes absent from it
 are not evaluated or used as references, even if they occur in another input.
@@ -131,10 +83,9 @@ Existing genomovar labels are used as supplied; genomovars are not recalculated.
 ### fastANI input
 
 [EcoZUR.ani](../input/EcoZUR.ani)
-is the original file from `03.ANI`, with five whitespace-separated fields:
-query genome, reference genome, ANI percent, matching fragment count, and total
-query fragment count. The source file covers 248 genomes, but only the 247
-metadata-listed genomes enter this analysis.
+
+Columns represent: query genome, reference genome, ANI percent, bidirectional mapped fragment count, and total fragment count of the query. 
+The source file covers 248 genomes, but only the 247 metadata-listed genomes enter this analysis as B37-6 shows <95% ANi with the other genomes
 
 ### ClermonTyping inputs
 
@@ -147,10 +98,6 @@ metadata-listed genomes enter this analysis.
 - [ClermonTyping_output/](../input/ClermonTyping_output/): only the 247 Mash
   tables and 247 BLAST XML files used for included genomes were copied.
 
-The two summary tables retain their original extra rows; those rows are ignored
-before looking for genome-specific output files. Assembly names and tree tips
-are matched by removing the `_SPAdes_...` suffix where present and replacing
-underscores with hyphens. The original calls in the two summary tables must agree.
 
 ClermonTyping identifies plausible PCR products using primer alignments,
 orientation, spacing, and mismatch criteria, then uses marker patterns to assign
@@ -184,38 +131,23 @@ is retained rather than changing either input.
 ### Core-gene tree
 
 [EcoZUR_fasttree.tre](../input/EcoZUR_fasttree.tre)
-is a renamed copy of the exact V2_gamma tree used by the assessment, originally
-from this directory:
 
-```text
-02.Core_Gene_Pipeline/06.Core_Gene_Phylogeny/
-Inveriable-Sites-Removed_using_99percent_genes/
-```
-
-**The V3 tree attachment is not used.** The full original V2_gamma tree is
-preserved, including extra tips, but only included genomes are compared.
+Only included genomes are compared.
 
 ## Methods
 
 ### 1. Construct one symmetric ANI matrix
 
-For each unordered genome pair, including self pairs:
+For each pairwise genome comparison:
 
-1. Retain the row with the largest **fifth-column** value (total query fragments),
-   not the fourth-column matching-fragment count.
+1. Retain the row with the largest **fifth-column** value (total query fragments corresponding to the larger genome in teh comparison)
 2. If multiple rows share that maximum, choose one uniformly at random using
    the seeded random generator.
 3. Place its ANI in both corresponding matrix cells. Do not average reciprocal
    ANI values.
 
-For example, `B001-5 E58-3 99.8577 1523 1665` is selected instead of
-`E58-3 B001-5 99.9312 1529 1565` because 1665 exceeds 1565.
-
-Self-match values are retained as reported, including the 99.9999 value for
-E179-6. Missing comparisons or self matches are errors, never imputed values.
-The included dataset yields a complete 247-by-247 matrix: 30,628 unordered
-pairs, including 247 self pairs. There are 105 pairs with tied maximum
-fifth-column values.
+Self-match values are retained as reported. The included dataset yields a complete 247-by-247 matrix: 30,628
+pairs, including 247 self pairs.
 
 ### 2. Establish original-label reference candidates
 
@@ -234,7 +166,7 @@ The reference set is built once. Predictions are never recycled as reference
 labels, and no genome can use itself as a reference. Every included genome is
 assessed, whether its original call was assigned or unknown.
 
-### 3. Obtain a quality-qualified ANI vote
+### 3. Obtain an ANI vote
 
 If a genome has eligible same-genomovar reference peers at **ANI >=99.5%**, and
 its genomovar has no conflicting assigned original calls, their common
@@ -250,7 +182,7 @@ the ANI vote only if:
 
 - Best ANI is **strictly greater than 98.5%**.
 - At least **one external genomovar** contains a candidate-group reference
-  above 98.5% ANI. Two genomovars are no longer required.
+  above 98.5% ANI.
 - Best candidate ANI exceeds the best competing-group ANI by **at least 0.1
   percentage point**. A tiny numerical tolerance handles floating-point
   representation at this boundary.
@@ -265,7 +197,7 @@ distinct-genomovar count. External evidence is computed for every genome, even
 when the within-genomovar route supplies the ANI vote. It is not a fourth vote
 and no longer acts as a separate veto.
 
-### 4. Obtain a quality-qualified Tree vote
+### 4. Obtain a Tree vote
 
 For each genome pair, patristic distance is the sum of branch lengths along the
 connecting path in the supplied Newick tree. Visual adjacency of tips in a
@@ -295,7 +227,7 @@ be equated with an unfiltered whole-genome substitution rate.
 The method does not use bootstrap support, infer ancestral phylogroup labels,
 or require monophyly. It compares distances to labeled reference tips.
 
-### 5. Obtain a quality-qualified Mash vote
+### 5. Obtain a Mash vote
 
 The focal genome's unique best Mash reference group casts a vote only at
 **identity >=0.95**. Missing files, no hits, a lower identity, or an exact tie
@@ -319,8 +251,8 @@ excluded from voting; two abstentions never count as agreement.
 | No group has at least two votes | Apply the fallback rules below |
 
 No method has an unconditional veto or numerical priority. In particular,
-ANI + Mash can outweigh Tree (as for E84-6), while Tree + Mash can compensate
-for an ANI abstention (as for B119-2). Even a qualified ANI vote can lose to
+ANI + Mash can outweigh Tree, while Tree + Mash can compensate
+for an ANI abstention. Even a qualified ANI vote can lose to
 agreeing Tree and Mash votes. Method quality thresholds are unchanged apart
 from reducing the external ANI support minimum from two genomovars to one.
 
@@ -337,17 +269,6 @@ The fallback is a reporting rule, **not evidence of two-method agreement**.
 For fallback rows, `consensus_phylogroup` remains `Unknown` and
 `supporting_methods` is empty. Neither consensus nor fallback assignments are
 fed back into the reference set.
-
-```text
-qualified_votes = [ANI vote, Tree vote, Mash vote] excluding Unknown
-if any group has at least two votes:
-    predicted_phylogroup = that consensus group
-elif genomovar_size == 1 and original_phylogroup != Unknown:
-    predicted_phylogroup = original_phylogroup
-    singleton_fallback = True
-else:
-    predicted_phylogroup = Unknown
-```
 
 ### 7. Plot the ANI matrix
 
@@ -366,12 +287,11 @@ Three aligned annotation bars show:
 Original and predicted phylogroups share a color palette; `Unknown` is gray.
 Text is placed once per contiguous annotation block using black or white,
 whichever provides greater contrast. The PNG is saved at **300 DPI**.
-The third bar retains the label "ANI-predicted phylogroup", but it now includes
-fallback assignments as well as two-of-three consensus. **E5-5 is displayed
-as D, not Unknown.** The TSV's status/basis fields must be consulted to
+The third bar retains the label "Predicted phylogroup", and includes
+fallback assignments as well as two-of-three consensus. The TSV's status/basis fields must be consulted to
 distinguish a fallback from a supported consensus; they share phylogroup colors.
 
-## Reading the evidence TSV
+## Reading the TSV
 
 [ClermonTyping_phylogroup_predictions.tsv](../results/ClermonTyping_phylogroup_predictions.tsv)
 contains one row per included genome. Important fields include:
@@ -429,13 +349,6 @@ originally unassigned singletons can still remain unresolved in other datasets.
 For the results used in the manuscript, use the explicit
 `manuscript_phylogroup` column in the evidence TSV:
 
-```text
-if predicted_phylogroup is not Unknown:
-    manuscript_phylogroup = predicted_phylogroup
-else:
-    manuscript_phylogroup = original_phylogroup
-```
-
 Consensus revisions and newly assigned genomes use the agreed phylogroup.
 Singleton fallbacks use the original call in both the PNG and manuscript column.
 If a non-singleton remains unresolved, its PNG label stays `Unknown` while the
@@ -443,30 +356,7 @@ manuscript column retains its original call, preserving the earlier manuscript
 reporting policy. If both calls are unknown, the manuscript value also remains
 `Unknown`. Manuscript selection never changes votes or reference eligibility.
 
-The six singletons that were unresolved under the earlier all-checks-must-pass
-rules are now handled as follows (`Unknown` in a vote column means abstention):
-
-| Genome | ANI vote | Tree vote | Mash vote | Final / PNG / manuscript | Basis |
-|---|---|---|---|---|---|
-| B101-1 | D | D | D | D | Three-method consensus |
-| E162-3 | B2 | B2 | B2 | B2 | Three-method consensus |
-| R56-3 | D | D | D | D | Three-method consensus |
-| E84-6 | B1 | Unknown | B1 | B1 | ANI + Mash |
-| B119-2 | Unknown | D | D | D | Tree + Mash |
-| E5-5 | Unknown | Unknown | E | D | Singleton original-call fallback |
-
-For E5-5, the provisional ANI candidate is A (97.8845%), below the ANI cutoff
-and with insufficient margin. The nearest eligible tree group is C, but it
-fails the required distance separation from competitors. Mash supports E via
-the 0.984247 top reference hit. Only one method qualifies, so no consensus
-exists. Its original PCR call D is retained **only because of the fallback**.
-
-## Verified packaged run (seed 13)
-
-The launcher was successfully run from an unrelated working directory.
-The revised output contains 247 rows and 63 columns, including the individual
-votes, their qualification reasons, consensus/fallback provenance, and
-`manuscript_phylogroup`.
+## Verified packaged run
 
 | Outcome | Genomes |
 |---|---:|
@@ -485,54 +375,7 @@ Key predictions:
 - Q38-1: Unknown to A.
 
 There are 246 consensus assignments (244 with all three votes and two with
-two votes) and one singleton fallback. Relative to the previous conservative
-version, only the six formerly unresolved final assignments change; the seven
-suggested revisions and five assignments of previously unknown genomes remain.
-The manuscript assignments are unchanged because the earlier manuscript policy
-already retained original calls for those six genomes.
-
-Use the fixed seed 13 launcher for reproducibility. Tied ANI selections and
-numeric evidence can differ across seeds. The PNG remains a 300-DPI plot.
-The packaged run passed all 28 regression tests and all 499 input checksum
-checks; the input files were not changed.
-
-## Checks and limitations
-
-Run the included synthetic regression suite from this directory:
-
-```bash
-python3 -B -m unittest -v test_plot_clermontyping_ani
-```
-
-Tests cover directional ANI selection and ties, method-specific threshold
-boundaries, one-genomovar support, all three two-method agreement combinations,
-independent Tree candidates, abstentions, self-reference exclusion, reference
-eligibility, singleton-only fallback, non-singleton unresolved cases, manuscript
-selection, input parsing, and annotation colors/order.
-
-Missing required inputs, incomplete ANI matrices, invalid colors, conflicting
-summary-table calls, malformed files, or missing tree tips produce errors.
-Missing optional Mash/XML files generate warnings and explicit evidence
-statuses rather than fabricated negative hits. All expected optional files
-are supplied in this package.
-
-The ANI, Mash, and tree signals all depend on the same underlying genomes and
-are not statistically independent. Close genomic similarity does not guarantee
-a phylogroup assignment. Primer variation, recombination, assembly problems,
-reference sampling, and incorrect original labels can affect the result.
-The methods qualify their votes separately but are not independent statistical
-observations: ANI and Tree use the same PCR/Mash-concordant reference pool, and
-genomic signals can be correlated. Two agreeing methods do not establish a
-calibrated probability of correctness. Rare groups may lack an eligible
-reference or a represented competitor needed to qualify ANI/Tree votes.
-A singleton fallback can retain an incorrect original call and must not be
-counted as a validated consensus.
-
-The 99.5%, 98.5%, 0.1-percentage-point, and 0.8-ratio thresholds are explicit
-heuristics, not universally established phylogroup boundaries. A stronger
-validation would use independently curated reference labels, hold out whole
-genomovars, and assess sensitivity to these thresholds. Agreement with the
-original calls is internal consistency, not measured classification accuracy.
+two votes) and one singleton fallback.
 
 ## Method and format references
 
