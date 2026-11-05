@@ -611,8 +611,7 @@ def plot_clustermap(
         grid.ax_cbar.tick_params(labelsize=6)
         grid.ax_cbar.set_ylabel("ANI (%)", fontsize=8, labelpad=4)
         grid.fig.suptitle(
-            f"EcoZUR ANI and ClermonTyping ({len(matrix)} genomes)\n"
-            "Complete linkage on 100 - ANI; pair selected by largest column 5",
+            f"EcoZUR ANI and ClermonTyping ({len(matrix)} genomes)",
             fontsize=12, y=1.025,
         )
         grid.savefig(output, dpi=DPI, bbox_inches="tight")
