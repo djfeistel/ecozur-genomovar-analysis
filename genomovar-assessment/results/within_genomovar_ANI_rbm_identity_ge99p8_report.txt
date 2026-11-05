@@ -1,0 +1,29 @@
+RBM sequence-identity fraction matrix
+RBM directory: /storage/project/r-ktk3-0/dfeistel3/rich_project_bio-konstantinidis/EcoZUR_SPAdes_reassembly/BAKTA_FFN/RBM
+Inclusive identity cutoff: 99.8%
+Seed used by the shared ANI direction selection: 13
+RBM files found: 32387
+Genome self-comparison files excluded: 1
+Out-of-scope files excluded: 19344
+Eligible reciprocal file pairs reduced to one: 1
+Genomovars: 33
+Genomes: 162
+Expected unique genome pairs: 13041
+Available unique genome pairs: 13041
+Missing unique genome pairs: 0
+Total RBM rows across selected files: 54448448
+Qualifying rows across selected files: 12967775
+Axis order: g30, g31, g32, g33, g38, g42, g48, g49, g53, g54, g56, g62, g69, g70, g72, g75, g84, g88, g94, g99, g100, g1, g3, g4, g7, g11, g12, g14, g16, g19, g22, g23, g24
+Phylogroup order: A, B1, B2, D
+
+Per-file ratio: count(column 3 >= cutoff) / count(all nonblank RBM rows).
+Each reported row is counted once; no length weighting or gene-row deduplication.
+Denominator is the number of reported RBMs, NOT the total genes in either genome.
+Identity is interpreted at the precision reported in column 3; reported 100% does not establish identity across full-length genes.
+Genomovar cells: arithmetic mean of per-genome-pair ratios, with equal weight per genome pair, NOT pooled qualifying counts / pooled total counts.
+Diagonal: mean ratios for distinct genomes in the same genomovar.
+Reciprocal files: use the retained ANI direction if both exist; use the available direction if only one exists. Unused files are recorded in the pair table.
+Missing pairs are reported and omitted from means, never assigned ratio zero.
+An empty matrix cell is NA; pair-count matrices count available genome pairs.
+Axes, phylogroup annotations, and membership match the ANI heatmap.
+Heatmap scale is 0 to 1; annotations use 2 decimals; TSV ratios are unrounded.

@@ -1,0 +1,25 @@
+ANI input: /storage/project/r-ktk3-0/dfeistel3/rich_project_bio-konstantinidis/EcoZUR_SPAdes_reassembly/ecozur-genomovar-analysis/genomovar-assessment/inputs/EcoZUR.ani
+Metadata: /storage/project/r-ktk3-0/dfeistel3/rich_project_bio-konstantinidis/EcoZUR_SPAdes_reassembly/ecozur-genomovar-analysis/genomovar-assessment/inputs/EcoZUR_genomovar_metadata.tsv
+Seed: 13
+Input ANI rows: 61504
+Unique input genomes: 248
+Self comparisons removed: 248
+Selected unordered pairs (before metadata filtering): 30628
+Equal-maximum fragment-count pairs randomized: 105
+Metadata genomes: 247
+Genomovars plotted (at least 3 input genomes): 33
+Genomes in plotted genomovars: 162
+Within-genomovar pairs plotted: 379
+Genomovar order: g30, g31, g32, g33, g38, g42, g48, g49, g53, g54, g56, g62, g69, g70, g72, g75, g84, g88, g94, g99, g100, g1, g3, g4, g7, g11, g12, g14, g16, g19, g22, g23, g24
+Phylogroup order: A, B1, B2, D
+
+Method: retain the entire row with maximum column-5 query fragments per unordered pair; select uniformly at random among tied maximum rows.
+ANI summaries: unweighted descriptive statistics of retained within-group pairwise ANI percentages; sample standard deviation (ddof=1).
+Membership: distinct annotated genomes present in the ANI input.
+No reciprocal ANI averaging; no ANI values imputed or rounded before analysis.
+Violin: Gaussian KDE, Scott bandwidth, cut=0, equal maximum widths; median bar; seeded uniform horizontal point jitter.
+Pairwise ANI observations share genomes and are not independent replicates. Violin density estimates are especially uncertain for small genomovars.
+
+WARNING: Excluded from grouped analysis (no metadata): B37-6
+
+Versions: numpy=2.3.5, pandas=3.0.0, matplotlib=3.10.7, seaborn=0.13.2

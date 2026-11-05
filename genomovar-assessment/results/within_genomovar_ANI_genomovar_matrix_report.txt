@@ -1,0 +1,17 @@
+Genomovar ANI matrix
+Seed used for the shared retained genome pairs: 13
+Genomovars: 33
+Genomes: 162
+Unique genome pairs used: 13041
+Within-genomovar pairs: 379
+Between-genomovar pairs: 12662
+Axis order: g30, g31, g32, g33, g38, g42, g48, g49, g53, g54, g56, g62, g69, g70, g72, g75, g84, g88, g94, g99, g100, g1, g3, g4, g7, g11, g12, g14, g16, g19, g22, g23, g24
+Phylogroup order: A, B1, B2, D
+
+Off-diagonal: unweighted arithmetic mean of retained ANI values for all genome pairs spanning the two genomovars; expected count = n_i * n_j.
+Diagonal: unweighted within-genomovar mean, matching the violin summary; expected count = n_i * (n_i - 1) / 2. Self comparisons are excluded.
+The same selected genome-pair rows feed both analyses; no new reciprocal selection or randomization occurs in this section.
+Both matrices are symmetric. Mirrored entries represent the same observations, not additional independent pairs.
+Only genomovars included in the violin plot are used, in the same order.
+The TSV retains unrounded means; only heatmap annotations use two decimals.
+Missing comparisons are not imputed. An empty cell has ANI=NA and pair count=0.
