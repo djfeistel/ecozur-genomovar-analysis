@@ -1,0 +1,15 @@
+Input file:                     ../input/EcoZUR.ani
+Genomes:                        248
+Comparisons read (rows):        61504
+Reciprocal pairs compared:      30628
+
+|ANI(A vs B) - ANI(B vs A)|
+  Mean:    0.0507
+  SD:      0.0393
+  Median:  0.0422
+  Min:     0.0000
+  Max:     0.3697  (C50-4 vs E71-6: 96.6993 / 97.069)
+
+Per-pair differences written to: ../results/reciprocal_ani_differences.tsv
+
+Plot written to: ../results/reciprocal_ani_differences.png
