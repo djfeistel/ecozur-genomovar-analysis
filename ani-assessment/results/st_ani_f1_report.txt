@@ -1,0 +1,30 @@
+ANI input: /storage/project/r-ktk3-0/dfeistel3/rich_project_bio-konstantinidis/EcoZUR_SPAdes_reassembly/ecozur-genomovar-analysis/ani-assessment/input/EcoZUR.ani
+Metadata: /storage/project/r-ktk3-0/dfeistel3/rich_project_bio-konstantinidis/EcoZUR_SPAdes_reassembly/ecozur-genomovar-analysis/ani-assessment/input/EcoZUR_STs.tsv
+Seed: 13
+Input ANI rows: 61504
+Unique input genomes: 248
+Self comparisons removed: 248
+Retained unordered pairs (larger query-fragment count): 30628
+Equal-maximum fragment-count pairs randomized: 105
+Pairs excluded (genome without metadata): 247
+Pairs available for ST analysis: 30381
+Genomes with ST 'XXX' (negatives only): 2
+Known STs among ANI genomes: 92 (36 with >= 2 genomes)
+ST selection: top 6 STs by genome count
+STs evaluated: ST10 (n=30), ST38 (n=15), ST131 (n=15), ST4 (n=9), ST270 (n=8), ST69 (n=6)
+Plot grid: 95 to 99.9% ANI every 0.1%, plus 99.9999%
+CSV thresholds: 99, 99.2, 99.5, 99.8
+
+Per ST X (one-vs-rest): only retained pairs containing an ST-X genome are used.
+  TP = both ST X, ANI >= t;  FP = both ST X, ANI < t
+  TN = one ST X, ANI < t;    FN = one ST X, ANI >= t
+Precision = TP/(TP+FP); Recall = TP/(TP+FN); F1 = 2PR/(P+R) = 2TP/(2TP+FP+FN);
+Accuracy = (TP+TN)/(TP+TN+FP+FN). Zero denominators give NA.
+Genomes with ST 'XXX' are negatives only, never evaluated as an ST.
+Pooled: TP/FP/TN/FN summed across the selected STs; non-ST pairs between two
+selected STs are counted once from each side.
+
+WARNING: Excluded (no metadata): B37-6
+WARNING: Top-6 cutoff falls within a tie at 6 genomes (STs 69, 394, 517, 746, 1312); kept the first by natural ST order.
+
+Versions: numpy=2.3.5, pandas=3.0.0, matplotlib=3.10.7, seaborn=0.13.2
